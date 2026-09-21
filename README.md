@@ -10,42 +10,16 @@
 
 ---
 
-### [TR] Proje Özeti & Durum
+## [EN] English Overview
 
-> 📌 **PROJE DURUMU:** Bu proje tamamlanmış (finalized/archive) bir referans çalışmasıdır. Aktif olarak yeni özellik eklenmeyecek olup, 15 yaşımda modern C++ ve düşük seviyeli ağ programlama (low-level network programming) alanındaki yetkinliğimi pekiştirmek amacıyla geliştirilmiş nihai sürümdür.
-
-PureCyber; yerel ağ adaptörleri üzerinden akan ham paketleri (raw Ethernet frames) sürücü (driver) seviyesinde yakalayan, çok katmanlı OSI protokol analizi gerçekleştiren ve şüpheli/açık veri sızıntılarını gerçek zamanlı raporlayan modüler bir pasif ağ dinleme (network sniffing) ve adli bilişim (digital forensics) aracıdır.
-
-> ⚠️ **YASAL VE ETİK UYARI (DISCLAIMER):**  
-> Bu yazılım yalnızca akademik araştırma, siber güvenlik eğitimi ve ağ yöneticilerinin yetkili güvenlik testleri (penetration testing) için geliştirilmiştir. Yetkisiz ağ trafiğini dinlemek veya kaydetmek bilişim suçları mevzuatı kapsamında cezai sorumluluk doğurabilir. Yazar, yazılımın kötüye kullanımından sorumlu tutulamaz.
-
-#### 🌟 Yetenekler
-* **Düşük Seviye Paket Yakalama:** WinPcap / Npcap sürücüsü ve optimize edilmiş BPF (Berkeley Packet Filter) motoru ile sıfır soket yüküyle pasif paket filtreleme.
-* **Katmanlı Protokol Çözümleme (Parsing):**
-  * `L2 (Ethernet)`: MAC adres ayrıştırma ve OUI tabanlı donanım üreticisi (Vendor Lookup - Apple, Samsung, Intel vb.) tespiti.
-  * `L3 (IPv4)`: Paket boyutu, IP başlıkları, TTL kontrolü ve IHL analizi.
-  * `L4 (TCP/UDP)`: Port eşleştirme, TCP bayrakları (SYN, ACK, FIN, PSH) ve akış kontrolü.
-  * `L7 (Uygulama Katmanı)`:
-    * **HTTP/1.x**: Metotlar (`GET`, `POST`, `PUT`, `DELETE`), Host, User-Agent, Referer, Cookie ve Content-Type ayrıştırma.
-    * **DNS**: UDP 53 üzerindeki sorgulanan domain isimlerinin dinamik decode edilmesi.
-    * **TLS SNI Sniffing**: Şifrelenmiş HTTPS (Port 443/8443) oturumlarında `TLS ClientHello` paketi içerisindeki şifresiz *Server Name Indication* uzantısını ayrıştırarak hedef alan adını ve TLS versiyonunu (`TLS 1.2`, `TLS 1.3`) çözümleme.
-* **Cihaz & İşletim Sistemi Parmak İzi (OS Fingerprinting):** User-Agent dizgelerinden ve paket özelliklerinden istemcinin OS (`Windows`, `macOS`, `iOS`, `Android`, `Linux`) ve tarayıcı sürümünü otomatik çıkarma.
-* **Güvenlik & Zafiyet Tespiti (Credential Harvester):** Şifrelenmemiş HTTP POST form verilerindeki (`application/x-www-form-urlencoded` ve `application/json`) kimlik bilgilerini (parola, e-posta, token, session) regex/manual parser ile yakalama.
-* **Olay Raporlama (SIEM / Webhook Entegrasyonu):** `WinINet` API kullanılarak harici HTTP endpoint'lerine ve Discord sunucularına yapılandırılabilir throttle (cooldown) ile anlık zenginleştirilmiş embed/JSON raporlama.
-* **Adli Loglama:** Yakalanan oturumların zaman damgasıyla CSV formatında `capture.log` dosyasına kalıcı kaydı.
-
----
-
-### [EN] Project Overview & Status
-
-> 📌 **PROJECT STATUS:** This project is a completed, standalone reference build. It is not slated for further active updates or feature additions. It stands as a finalized portfolio demonstration of low-level C++ network engineering, protocol dissection, and telemetry integration.
+> 📌 **PROJECT STATUS:** This project is a completed, standalone reference build. It is not slated for further active updates or feature additions. It stands as a finalized portfolio demonstration of low-level C++ network engineering, protocol dissection, and security telemetry integration.
 
 PureCyber is a high-performance, modular passive network sniffer and digital forensics tool written in modern C++. It intercepts raw Ethernet frames at the driver level using Npcap, performs deep multi-layer OSI protocol parsing, and alerts on plain-text credentials and sensitive traffic leaks in real time.
 
 > ⚠️ **LEGAL & ETHICAL DISCLAIMER:**  
 > This software is intended solely for educational purposes, academic research, and authorized penetration testing by network administrators. Intercepting network traffic without explicit consent is illegal. The author assumes no liability for misuse.
 
-#### 🌟 Key Capabilities
+### 🌟 Key Capabilities
 * **Kernel-Level Packet Interception:** Seamless raw frame acquisition via Npcap / WinPcap with kernel-level BPF (Berkeley Packet Filter) offloading to eliminate user-space CPU bottlenecks.
 * **Multi-Layer Protocol Dissection:**
   * `Layer 2 (Data Link)`: MAC address parsing and OUI vendor fingerprinting (Apple, Samsung, Intel, etc.).
@@ -59,6 +33,32 @@ PureCyber is a high-performance, modular passive network sniffer and digital for
 * **Credential Leak Detection:** Auditing unencrypted HTTP POST bodies (`application/x-www-form-urlencoded` and `application/json`) for exposed passwords, session tokens, and usernames.
 * **Security Telemetry & Webhook Dispatch:** Native Windows `WinINet` implementation for non-blocking alerting to Discord and SIEM webhook endpoints with built-in rate limiting (cooldown).
 * **Forensic Logging:** Persistent session recording in CSV-formatted `capture.log`.
+
+---
+
+## [TR] Türkçe Tanıtım
+
+> 📌 **PROJE DURUMU:** Bu proje tamamlanmış, bağımsız bir referans çalışmasıdır. Aktif olarak yeni özellik eklenmeyecek olup, modern C++ ve düşük seviyeli ağ programlama (low-level network programming) alanındaki yetkinlikleri sergileyen nihai sürümdür.
+
+PureCyber; yerel ağ adaptörleri üzerinden akan ham paketleri (raw Ethernet frames) sürücü (driver) seviyesinde yakalayan, çok katmanlı OSI protokol analizi gerçekleştiren ve şüpheli/açık veri sızıntılarını gerçek zamanlı raporlayan modüler bir pasif ağ dinleme (network sniffing) ve adli bilişim (digital forensics) aracıdır.
+
+> ⚠️ **YASAL VE ETİK UYARI (DISCLAIMER):**  
+> Bu yazılım yalnızca akademik araştırma, siber güvenlik eğitimi ve ağ yöneticilerinin yetkili güvenlik testleri (penetration testing) için geliştirilmiştir. Yetkisiz ağ trafiğini dinlemek veya kaydetmek bilişim suçları mevzuatı kapsamında cezai sorumluluk doğurabilir. Yazar, yazılımın kötüye kullanımından sorumlu tutulamaz.
+
+### 🌟 Öne Çıkan Yetenekler
+* **Düşük Seviye Paket Yakalama:** WinPcap / Npcap sürücüsü ve optimize edilmiş BPF (Berkeley Packet Filter) motoru ile sıfır soket yüküyle pasif paket filtreleme.
+* **Katmanlı Protokol Çözümleme (Parsing):**
+  * `L2 (Ethernet)`: MAC adres ayrıştırma ve OUI tabanlı donanım üreticisi (Vendor Lookup - Apple, Samsung, Intel vb.) tespiti.
+  * `L3 (IPv4)`: Paket boyutu, IP başlıkları, TTL kontrolü ve IHL analizi.
+  * `L4 (TCP/UDP)`: Port eşleştirme, TCP bayrakları (SYN, ACK, FIN, PSH) ve akış kontrolü.
+  * `L7 (Uygulama Katmanı)`:
+    * **HTTP/1.x**: Metotlar (`GET`, `POST`, `PUT`, `DELETE`), Host, User-Agent, Referer, Cookie ve Content-Type ayrıştırma.
+    * **DNS**: UDP 53 üzerindeki sorgulanan domain isimlerinin dinamik decode edilmesi.
+    * **TLS SNI Sniffing**: Şifrelenmiş HTTPS (Port 443/8443) oturumlarında `TLS ClientHello` paketi içerisindeki şifresiz *Server Name Indication* uzantısını ayrıştırarak hedef alan adını ve TLS versiyonunu (`TLS 1.2`, `TLS 1.3`) çözümleme.
+* **Cihaz & İşletim Sistemi Parmak İzi (OS Fingerprinting):** User-Agent dizgelerinden ve paket özelliklerinden istemcinin OS (`Windows`, `macOS`, `iOS`, `Android`, `Linux`) ve tarayıcı sürümünü otomatik çıkarma.
+* **Güvenlik & Zafiyet Tespiti (Credential Harvester):** Şifrelenmemiş HTTP POST form verilerindeki (`application/x-www-form-urlencoded` ve `application/json`) kimlik bilgilerini (parola, e-posta, token, session) regex/manual parser ile yakalama.
+* **Olay Raporlama (SIEM / Webhook Entegrasyonu):** `WinINet` API kullanılarak harici HTTP endpoint'lerine ve Discord sunucularına yapılandırılabilir throttle (cooldown) ile anlık zenginleştirilmiş embed/JSON raporlama.
+* **Adli Loglama:** Yakalanan oturumların zaman damgasıyla CSV formatında `capture.log` dosyasına kalıcı kaydı.
 
 ---
 
