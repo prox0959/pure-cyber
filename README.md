@@ -1,22 +1,22 @@
-# PureCyber — Pasif Ağ Trafiği & Protokol Analizörü (C++ / Npcap)
+# PureCyber — Passive Network Traffic & Protocol Analyzer (C++ / Npcap)
 
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D6.svg)](https://microsoft.com)
 [![Npcap](https://img.shields.io/badge/Driver-Npcap%20SDK-orange.svg)](https://npcap.com/)
 [![CMake](https://img.shields.io/badge/Build-CMake-brightgreen.svg)](https://cmake.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-PureCyber; yerel ağ adaptörleri üzerinden akan ham paketleri (raw Ethernet frames) sürücü (driver) seviyesinde yakalayan, çok katmanlı OSI protokol analizi gerçekleştiren ve şüpheli/açık veri sızıntılarını gerçek zamanlı raporlayan modüler bir pasif ağ dinleme (network sniffing) ve adli bilişim (digital forensics) aracıdır.
+[![Release](https://img.shields.io/badge/Release-v1.0.0-brightgreen.svg)](https://github.com/prox0959/pure-cyber/releases)
 
 ---
+
+### [TR] Türkçe Tanıtım
+
+PureCyber; yerel ağ adaptörleri üzerinden akan ham paketleri (raw Ethernet frames) sürücü (driver) seviyesinde yakalayan, çok katmanlı OSI protokol analizi gerçekleştiren ve şüpheli/açık veri sızıntılarını gerçek zamanlı raporlayan modüler bir pasif ağ dinleme (network sniffing) ve adli bilişim (digital forensics) aracıdır.
 
 > ⚠️ **YASAL VE ETİK UYARI (DISCLAIMER):**  
 > Bu yazılım yalnızca akademik araştırma, siber güvenlik eğitimi ve ağ yöneticilerinin yetkili güvenlik testleri (penetration testing) için geliştirilmiştir. Yetkisiz ağ trafiğini dinlemek veya kaydetmek bilişim suçları mevzuatı kapsamında cezai sorumluluk doğurabilir. Yazar, yazılımın kötüye kullanımından sorumlu tutulamaz.
 
----
-
-## 🌟 Öne Çıkan Yetenekler
-
+#### 🌟 Öne Çıkan Yetenekler
 * **Düşük Seviye Paket Yakalama:** WinPcap / Npcap sürücüsü ve optimize edilmiş BPF (Berkeley Packet Filter) motoru ile sıfır soket yüküyle pasif paket filtreleme.
 * **Katmanlı Protokol Çözümleme (Parsing):**
   * `L2 (Ethernet)`: MAC adres ayrıştırma ve OUI tabanlı donanım üreticisi (Vendor Lookup - Apple, Samsung, Intel vb.) tespiti.
@@ -33,87 +33,100 @@ PureCyber; yerel ağ adaptörleri üzerinden akan ham paketleri (raw Ethernet fr
 
 ---
 
-## 🏗 Mimari Yapı
+### [EN] English Overview
 
-Proje tek parça (monolithic) yerine endüstri standardı modüler bir mimariyle tasarlanmıştır:
+PureCyber is a high-performance, modular passive network sniffer and digital forensics tool written in modern C++. It intercepts raw Ethernet frames at the driver level using Npcap, performs deep multi-layer OSI protocol parsing, and alerts on plain-text credentials and sensitive traffic leaks in real time.
+
+> ⚠️ **LEGAL & ETHICAL DISCLAIMER:**  
+> This software is intended solely for educational purposes, academic research, and authorized penetration testing by network administrators. Intercepting network traffic without explicit consent is illegal. The author assumes no liability for misuse.
+
+#### 🌟 Key Capabilities
+* **Kernel-Level Packet Interception:** Seamless raw frame acquisition via Npcap / WinPcap with kernel-level BPF (Berkeley Packet Filter) offloading to eliminate user-space CPU bottlenecks.
+* **Multi-Layer Protocol Dissection:**
+  * `Layer 2 (Data Link)`: MAC address parsing and OUI vendor fingerprinting (Apple, Samsung, Intel, etc.).
+  * `Layer 3 (Network)`: IPv4 header dissection, TTL inspection, IHL verification, and checksum analysis.
+  * `Layer 4 (Transport)`: TCP/UDP port mapping, state flag tracking (SYN, ACK, FIN, PSH, RST).
+  * `Layer 7 (Application)`:
+    * **HTTP/1.x**: Dissecting methods (`GET`, `POST`, `PUT`, `DELETE`), headers (`Host`, `User-Agent`, `Referer`, `Cookie`), and payloads.
+    * **DNS**: Dynamic label parsing of domain name queries over UDP port 53.
+    * **TLS SNI Extraction**: Inspecting unencrypted *Server Name Indication* (SNI) extensions inside `TLS ClientHello` packets across encrypted HTTPS connections (Port 443/8443) to identify destination hostnames and negotiated protocols (`TLS 1.2`, `TLS 1.3`).
+* **Passive OS Fingerprinting:** Heuristic client identification (Windows, Linux, macOS, iOS, Android) and browser identification derived from User-Agent patterns.
+* **Credential Leak Detection:** Auditing unencrypted HTTP POST bodies (`application/x-www-form-urlencoded` and `application/json`) for exposed passwords, session tokens, and usernames.
+* **Security Telemetry & Webhook Dispatch:** Native Windows `WinINet` implementation for non-blocking alerting to Discord and SIEM webhook endpoints with built-in rate limiting (cooldown).
+* **Forensic Logging:** Persistent session recording in CSV-formatted `capture.log`.
+
+---
+
+## 🏗 Architecture / Mimari Yapı
 
 ```
 pure cyber/
-├── CMakeLists.txt         # Çapraz derleme ve Npcap SDK bağlama kuralları
-├── config.hpp             # BPF filtreleri, webhook ve çalışma zamanı yapılandırması
-├── main.cpp               # CLI argüman işleme, sinyal yakalama (SIGINT)
-├── setup.ps1              # Otomatik Npcap/SDK kurulum scripti
+├── CMakeLists.txt         # Build definitions and Npcap SDK linkage
+├── config.hpp             # Runtime configuration, BPF filters, webhook settings
+├── main.cpp               # CLI entrypoint, argument parsing, signal handling
+├── setup.ps1              # Automated setup script for Npcap and SDK
 ├── src/
-│   ├── capture.cpp/.hpp   # pcap döngüsü (pcap_loop), interface seçimi ve metrikler
-│   ├── parser.cpp/.hpp    # Ethernet, IP, TCP/UDP ve HTTP başlık ayrıştırıcı
-│   ├── tls_sniffer.cpp/.hpp # TLS ClientHello paketinden SNI domain ve sürüm çıkarıcı
-│   ├── credential.cpp/.hpp  # HTTP POST gövdesinden şifre/form verisi çıkarma ve URL decode
-│   ├── device_info.cpp/.hpp # MAC OUI veritabanı eşleştirmesi ve User-Agent analizi
-│   ├── webhook.cpp/.hpp   # Windows WinINet API ile asenkron webhook gönderimi
-│   └── display.cpp/.hpp   # ANSI destekli renkli CLI konsol arayüzü
+│   ├── capture.cpp/.hpp   # Core pcap capture loop (pcap_loop) & thread stats
+│   ├── parser.cpp/.hpp    # L2-L7 protocol dissecting engine
+│   ├── tls_sniffer.cpp/.hpp # TLS ClientHello SNI and version parser
+│   ├── credential.cpp/.hpp  # HTTP POST form field decoding & credential extractor
+│   ├── device_info.cpp/.hpp # MAC OUI database lookup & OS fingerprinting
+│   ├── webhook.cpp/.hpp   # WinINet asynchronous HTTP POST webhook client
+│   └── display.cpp/.hpp   # ANSI color-coded CLI dashboard
 ```
 
 ---
 
-## 🚀 Kurulum ve Derleme
+## 🚀 Build & Installation / Kurulum ve Derleme
 
-### Gereksinimler
-* Windows 10 veya Windows 11 (x64)
-* Visual Studio 2022 (C++ Masaüstü Geliştirme Paketi ile)
-* CMake 3.16 veya üzeri
-* [Npcap Driver](https://npcap.com/#download) (WinPcap API-compatible mode seçilmelidir)
-* [Npcap SDK](https://npcap.com/#download) (`npcap-sdk/` klasörüne yerleştirilir)
+### Prerequisites / Gereksinimler
+* Windows 10 / 11 (x64)
+* Visual Studio 2022 (with "Desktop development with C++")
+* CMake 3.16+
+* [Npcap Driver](https://npcap.com/#download) (Installed in WinPcap API-compatible mode)
+* [Npcap SDK](https://npcap.com/#download) (Extracted to `npcap-sdk/`)
 
-### 1. Otomatik Kurulum (PowerShell - Yönetici Olarak)
+### Automated Setup / Otomatik Kurulum (PowerShell as Admin)
 ```powershell
 powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
-### 2. Manuel Derleme (CMake)
+### Manual Compilation / Derleme
 ```powershell
 mkdir build
 cd build
 cmake .. -A x64
 cmake --build . --config Release
 ```
-Derleme çıktısı: `build\Release\purecyber.exe`
+Binary output: `build\Release\purecyber.exe`
 
 ---
 
-## 💻 Kullanım Örnekleri
+## 💻 Usage / Kullanım
 
-> ⚠️ Paket yakalama işlemi işletim sisteminde sürücü seviyesinde yetki gerektirdiğinden terminali **Yönetici (Run as Administrator)** olarak açınız.
+> ⚠️ Administrator privileges are required to bind to driver-level network interfaces. / *Yönetici hakları gereklidir.*
 
 ```powershell
-# 1. Mevcut ağ kartlarını ve açıklamalarını listele
+# List network adapters / Ağ kartlarını listele
 .\purecyber.exe --list
 
-# 2. Otomatik kart seçimi ile doğrudan dinlemeyi başlat
+# Start automatic capture / Otomatik dinleme başlat
 .\purecyber.exe
 
-# 3. Belirli bir arayüzü seç (Örn: #2 nolu kart)
+# Select interface by index / Belirli bir adaptörü seç
 .\purecyber.exe 2
 
-# 4. Yakalanan HTTP/TLS olaylarını Discord Webhook'una anlık ilet
+# Stream alerts to Discord / Discord Webhook ile canlı izle
 .\purecyber.exe --webhook https://discord.com/api/webhooks/xxxx/yyyy
 
-# 5. HTTP gövdesini (Payload) terminalde de göster
+# Display HTTP payloads / HTTP gövdesini göster
 .\purecyber.exe --payload
 
-# 6. Sadece webhook çalışsın, terminal çıktısını sessize al
+# Silent terminal mode (Webhook only) / Sessiz mod
 .\purecyber.exe --webhook https://discord.com/api/webhooks/xxxx/yyyy --silent
 ```
 
 ---
 
-## 🛡 Gelecek Geliştirmeler (Roadmap)
-
-- [ ] IPv6 tam başlık desteği
-- [ ] ARP Spoofing / Man-in-the-Middle (MitM) simülasyon modülü
-- [ ] PCAP dosyalarını kaydetme (`pcap_dump`) ve Wireshark uyumlu dışa aktarma
-- [ ] Çoklu iş parçacığı (Multi-threaded) paket işleme kuyruğu (Producer-Consumer Queue)
-
----
-
-## 📜 Lisans
-Bu proje [MIT Lisansı](LICENSE) altında korunmaktadır.
+## 📜 License / Lisans
+This project is open-source under the [MIT License](LICENSE).
