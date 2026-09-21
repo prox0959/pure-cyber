@@ -1,0 +1,40 @@
+# Build artifacts
+build/
+bin/
+obj/
+*.dir/
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.pdb
+*.ilk
+
+# CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.vcxproj
+*.vcxproj.*
+*.sln
+
+# Logs & Runtime captures (Hassas ağ verileri ve IP'ler içerebilir)
+*.log
+capture.log
+
+# Npcap SDK (Telif / lisans ve büyük binary kütüphaneler)
+npcap-sdk/
+
+# IDE / Editör ayarları
+.vs/
+.vscode/
+.idea/
+*.user
+
+# İşletim sistemi kalıntıları
+Thumbs.db
+Desktop.ini
+.DS_Store
